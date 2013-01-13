@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roles>
+	<role>
+		<name>ROLE_USER</name>
+	</role>
+	<role-mapping>
+		<tablename>apply</tablename>
+		<role_access>
+			<role_name>ROLE_USER</role_name>
+			<role_powers>
+				<power>
+					<op>create</op>
+					<op>delete</op>
+					<op>update</op>
+					<op>query</op>
+				</power>
+			</role_powers>
+		</role_access>
+	</role-mapping>
+</roles>
