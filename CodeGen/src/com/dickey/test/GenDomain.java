@@ -6,7 +6,7 @@ package com.dickey.test;
 
 import com.dickey.domain.DomainPo;
 import com.dickey.domain.PropertyPo;
-import com.dickey.domain.RefClassPo;
+import com.dickey.domain.RefDomainPo;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -48,40 +48,82 @@ public class GenDomain {
         Element root = document.getRootElement();
         //获取子节点列表table
         @SuppressWarnings("unchecked")
-		List<Element> domains = root.elements("class");
+		List<Element> domains = root.elements("domain");
         for (Element domain : domains) {
-            String name = (String) domain.elementText("classname");
-            String cnName = (String) domain.elementText("classname_cn");
+            String domainName = (String) domain.elementText("name");
+            String domainCnName = (String) domain.elementText("name_cn");
             
             List<PropertyPo> propertyPos = new LinkedList<>();
-            DomainPo domainPo = new DomainPo(name, cnName, propertyPos);
+            DomainPo domainPo = new DomainPo(domainName, domainCnName, propertyPos);
+            boolean isRefUserflag = false;
             
             //遍历columns
             @SuppressWarnings("unchecked")
 			List<Element> properties = domain.element("properties").elements("property");
             for (Element property : properties) {
+            	
                 String propName = property.elementText("name");
                 String propCnName = property.elementText("name_cn");
                 String propType = property.elementText("type");
-                boolean propPk = Boolean.valueOf(property.elementText("pk"));
-                boolean propEmpty = Boolean.valueOf(property.elementText("nullable"));
-                boolean propIdx = Boolean.valueOf(property.elementText("unique"));
+                PropertyPo propertyPo = new PropertyPo(propName, propCnName, propType);
                 
-                Element propRef = property.element("ref");
-                
+                //处理是否主键/非空/唯一/集合
+                String bool = property.elementText("pk");
+                if(bool != null){
+                	propertyPo.setPk(Boolean.valueOf(bool));
+                	propertyPo.setType("String");
+                }
+                bool = property.elementText("nullable");
+                if(bool != null){
+                	propertyPo.setNullable(bool);
+                }
+                bool = property.elementText("unique");
+                if(bool != null){
+                	propertyPo.setUnique(bool);
+                }
+                bool = property.elementText("plural");
+                if(bool != null){
+                	propertyPo.setPlural(Boolean.valueOf(bool));
+                }
+                       
                 //处理外键关联
-                RefClassPo refClassPo = null;
-                if(!propRef.getStringValue().equals("false")){
-                    String refClass = propRef.elementText("refClass");
-                    String refType = propRef.elementText("refType");
+                Element propRef = property.element("ref");
+                if(propRef != null && !propRef.getStringValue().equals("false")){
+                    String refDomain = propRef.elementText("ref_domain");
+                    String refType = propRef.elementText("ref_type");
+                    String refDisplayProp = propRef.elementText("ref_display_property");
+                    RefDomainPo refDomainPo = new RefDomainPo(refDomain, refType, refDisplayProp);
                     
-                    refClassPo = new RefClassPo(refClass, refType);
+                    //处理一对一&多对多连接表
+                    if(refType.equals("one-to-one") || refType.equals("many-to-many")){
+                    	String joinTable = (domainName.compareTo(refDomain) > 0) ? domainName + "_" + refDomain : refDomain + "_" + domainName;
+                    	String joinColumn = domainName + "_id";
+                    	String inverseJoinColumn = refDomain + "_id";
+                    	refDomainPo.setJoinTable(joinTable);
+                    	refDomainPo.setJoinColumn(joinColumn);
+                    	refDomainPo.setInverseJoinColumn(inverseJoinColumn);
+                    }
+                    
+                    //处理变量名规范，对关联类型属性变量名进行转换
+                    //首字母小写
+                    refDomain = refDomain.substring(0, 1).toLowerCase().concat(refDomain.substring(1));
+                    if(propertyPo.isPlural()){	
+                    	propertyPo.setName(refDomain + "s");
+                    }else{
+                    	propertyPo.setName(refDomain);
+                    }
+                    
+                    propertyPo.setRefDomainPo(refDomainPo);
                 }
                 
-                PropertyPo propertyPo = new PropertyPo(propName, propCnName, propType, propEmpty, propIdx, propPk, refClassPo);
                 domainPo.getProperties().add(propertyPo);
+                if(propType != null && propType.equals("User")){
+                	isRefUserflag = true;
+                }
+                
             }
-            System.out.println(domainPo);
+            domainPo.setUserRelated(isRefUserflag);
+            //System.out.println(domainPo);
             domainPos.add(domainPo);
         }
         
@@ -94,7 +136,7 @@ public class GenDomain {
      * @throws TemplateException 
      * @throws DocumentException
      */
-    public void mergeXmlDomain() throws IOException, TemplateException{
+    public void mergeDomainXml() throws IOException, TemplateException{
     	//Freemarker初始化工作
     	Configuration conf = new Configuration();
     	conf.setDirectoryForTemplateLoading(new File("src/templates"));
@@ -105,18 +147,41 @@ public class GenDomain {
         	root.put("package", GenDomain.pkg);
         	root.put("domain", domainPo);
         	//使用Configuration实例来加载指定模板
-        	Template template = conf.getTemplate("domain.ftl");
-        	//合并模板
-        	template.process(root, new OutputStreamWriter(System.out));
+        	Template domainTemplate = conf.getTemplate("domain.ftl");
+        	//合并domain模板
+        	//domainTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
+        	
+        	
+        	//加载dao模板
+        	Template daoTemplate = conf.getTemplate("dao.ftl");
+        	//合并dao模板
+        	//daoTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
+        	
+        	//加载daoImpl模板
+        	Template daoImplTemplate = conf.getTemplate("daoImpl.ftl");
+        	//合并dao模板
+        	//daoImplTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
 		}
     	
+    	//加载service模板
+    	root = new HashMap<String, Object>();
+    	root.put("package", GenDomain.pkg);
+    	root.put("domains", this.domainPos);
+    	Template serviceTemplate = conf.getTemplate("service.ftl");
+    	//合并service模板
+    	serviceTemplate.process(root, new OutputStreamWriter(System.out));
+    	System.out.println();
     }
     
     
     public static void main(String[] args) throws DocumentException, IOException, TemplateException{
+
     	GenDomain genDomain = new GenDomain();
     	genDomain.dbXmlParse();
-    	genDomain.mergeXmlDomain();
+    	genDomain.mergeDomainXml();
     	
     }
 }

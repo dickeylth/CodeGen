@@ -2,128 +2,238 @@
 <domains>
 	<domain>
 		<name>User</name>
-        <tablename>users</tablename>
-		<cnName>用户</cnName>
+		<name_cn>用户</name_cn>
 		<properties>
 			<property>
 				<name>id</name>
-				<cnName>用户id</cnName>
-				<type>int</type>
-				<empty>false</empty>
-				<idx>false</idx>
+				<name_cn>用户标识</name_cn>
 				<pk>true</pk>
-				<ref>false</ref>
 			</property>
 			<property>
 				<name>username</name>
-				<cnName>用户名</cnName>
+				<name_cn>用户名</name_cn>
 				<type>String</type>
-				<empty>false</empty>
-				<idx>true</idx>
-				<pk>false</pk>
-				<ref>false</ref>
+				<nullable>false</nullable>
+				<unique>true</unique>
 			</property>
 			<property>
 				<name>password</name>
-				<cnName>密码</cnName>
+				<name_cn>密码</name_cn>
 				<type>String</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
-				<ref>false</ref>
+				<nullable>false</nullable>
 			</property>
 			<property>
-				<name>enabled</name>
-				<cnName>是否可用</cnName>
-				<type>boolean</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
-				<ref>false</ref>
-			</property>
-		</properties>
-	</domain>
-	<domain>
-        <name>Authority</name>
-        <tablename>authorities</tablename>
-		<cnName>权限</cnName>
-		<properties>
-			<property>
-				<name>username</name>
-				<cnName>用户名</cnName>
-				<type>String</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
+				<name>roles</name>
+				<name_cn>用户所属角色</name_cn>
+				<type>Role</type>
+				<plural>true</plural>
 				<ref>
-					<refClass>User</refClass>
-					<refClassProp>username</refClassProp>
-					<refType>one-to-one</refType>
+					<ref_domain>Role</ref_domain>
+					<ref_type>many-to-many</ref_type>
+					<ref_display_property>rolename</ref_display_property>
 				</ref>
 			</property>
 			<property>
-				<name>authority</name>
-				<cnName>角色名</cnName>
+				<name>address</name>
+				<name_cn>地址</name_cn>
+				<type>Address</type>
+				<ref>
+					<ref_domain>Address</ref_domain>
+					<ref_type>one-to-one</ref_type>
+				</ref>
+			</property>
+			<property>
+				<name>phones</name>
+				<name_cn>手机号</name_cn>
 				<type>String</type>
-				<empty>false</empty>
-				<idx>false</idx>
 				<pk>false</pk>
-				<ref>false</ref>
+				<plural>true</plural>
+			</property>
+			<property>
+				<name>applications</name>
+				<name_cn>用户的请假单</name_cn>
+				<type>Application</type>
+				<plural>true</plural>
+				<ref>
+					<ref_domain>Application</ref_domain>
+					<ref_type>one-to-many</ref_type>
+				</ref>
 			</property>
 		</properties>
 	</domain>
 	<domain>
-		<name>apply</name>
-		<cnName>请假申请</cnName>
+		<name>Role</name>
+		<name_cn>角色</name_cn>
 		<properties>
 			<property>
-				<name>apply_id</name>
-				<name_cn>申请id</name_cn>
-				<type>int</type>
-				<empty>false</empty>
-				<idx>false</idx>
+				<name>id</name>
+				<name_cn>角色标识</name_cn>
 				<pk>true</pk>
-				<ref>false</ref>
 			</property>
 			<property>
-				<name>apply_user</name>
-				<name_cn>申请用户</name_cn>
-				<type>int</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
+				<name>rolename</name>
+				<name_cn>角色名</name_cn>
+				<type>String</type>
+				<nullable>false</nullable>
+				<unique>true</unique>
+			</property>
+			<property>
+				<name>users</name>
+				<name_cn>角色所对应用户</name_cn>
+				<type>User</type>
+				<plural>true</plural>
 				<ref>
-					<ref_table>users</ref_table>
-					<ref_table_col>user_id</ref_table_col>
-					<ref_type>many-to-one</ref_type>
+					<ref_domain>User</ref_domain>
+					<ref_type>many-to-many</ref_type>
+					<ref_display_property>username</ref_display_property>
 				</ref>
 			</property>
 			<property>
-				<name>apply_start</name>
+				<name>permissions</name>
+				<name_cn>角色所对应权限</name_cn>
+				<type>Permission</type>
+				<plural>true</plural>
+				<ref>
+					<ref_domain>Permission</ref_domain>
+					<ref_type>many-to-many</ref_type>
+					<ref_display_property>name</ref_display_property>
+				</ref>
+			</property>
+		</properties>
+	</domain>
+	<domain>
+		<name>Permission</name>
+		<name_cn>权限</name_cn>
+		<properties>
+			<property>
+				<name>id</name>
+				<name_cn>权限标识</name_cn>
+				<pk>true</pk>
+			</property>
+			<property>
+				<name>name</name>
+				<name_cn>权限名</name_cn>
+				<type>String</type>
+				<nullable>false</nullable>
+				<unique>true</unique>
+			</property>
+			<property>
+				<name>roles</name>
+				<name_cn>权限所对应角色</name_cn>
+				<type>Role</type>
+				<plural>true</plural>
+				<ref>
+					<ref_domain>Role</ref_domain>
+					<ref_type>many-to-many</ref_type>
+					<ref_display_property>rolename</ref_display_property>
+				</ref>
+			</property>
+		</properties>
+	</domain>
+	<domain>
+		<name>Address</name>
+		<name_cn>地址</name_cn>
+		<properties>
+			<property>
+				<name>id</name>
+				<name_cn>地址标识</name_cn>
+				<pk>true</pk>
+			</property>
+			<property>
+				<name>country</name>
+				<name_cn>国家</name_cn>
+				<type>String</type>
+			</property>
+			<property>
+				<name>city</name>
+				<name_cn>城市</name_cn>
+				<type>String</type>
+			</property>
+			<property>
+				<name>user</name>
+				<name_cn>地址所对应用户</name_cn>
+				<type>User</type>
+				<plural>false</plural>
+				<ref>
+					<ref_domain>User</ref_domain>
+					<ref_type>one-to-one</ref_type>
+				</ref>
+			</property>
+		</properties>
+	</domain>
+	<domain>
+		<name>Application</name>
+		<name_cn>请假申请</name_cn>
+		<properties>
+			<property>
+				<name>id</name>
+				<name_cn>申请标识</name_cn>
+				<pk>true</pk>
+			</property>
+			<property>
+				<name>user</name>
+				<name_cn>申请用户</name_cn>
+				<type>User</type>
+				<nullable>false</nullable>
+				<plural>false</plural>
+				<ref>
+					<ref_domain>User</ref_domain>
+					<ref_type>many-to-one</ref_type>
+					<ref_display_property>username</ref_display_property>
+				</ref>
+			</property>
+			<property>
+				<name>type</name>
+				<name_cn>请假类型</name_cn>
+				<type>ApplicationType</type>
+				<ref>
+					<ref_domain>ApplicationType</ref_domain>
+					<ref_type>many-to-one</ref_type>
+					<ref_display_property>name</ref_display_property>
+				</ref>
+			</property>
+			<property>
+				<name>start</name>
 				<name_cn>开始时间</name_cn>
 				<type>Date</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
-				<ref>false</ref>
 			</property>
 			<property>
-				<name>apply_end</name>
+				<name>end</name>
 				<name_cn>结束时间</name_cn>
 				<type>Date</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
-				<ref>false</ref>
 			</property>
 			<property>
-				<name>apply_reason</name>
+				<name>reason</name>
 				<name_cn>申请原因</name_cn>
 				<type>String</type>
-				<empty>false</empty>
-				<idx>false</idx>
-				<pk>false</pk>
-				<ref>false</ref>
+			</property>
+		</properties>
+	</domain>
+	<domain>
+		<name>ApplicationType</name>
+		<name_cn>请假申请类型</name_cn>
+		<properties>
+			<property>
+				<name>id</name>
+				<name_cn>申请类型标识</name_cn>
+				<pk>true</pk>
+			</property>
+			<property>
+				<name>name</name>
+				<name_cn>申请类型名</name_cn>
+				<type>String</type>
+				<nullable>false</nullable>
+				<unique>true</unique>
+			</property>
+			<property>
+				<name>applications</name>
+				<name_cn>该类型的申请单</name_cn>
+				<type>Application</type>
+				<plural>true</plural>
+				<ref>
+					<ref_domain>Application</ref_domain>
+					<ref_type>one-to-many</ref_type>
+				</ref>
 			</property>
 		</properties>
 	</domain>

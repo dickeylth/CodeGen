@@ -9,20 +9,24 @@ package com.dickey.domain;
  * @author 铁行
  */
 public class PropertyPo {
+
 	//属性名
     private String name;
     //属性中文名
     private String cnName;
     //属性类型
     private String type;
-    //属性主键
-    private boolean pk;
-    //属性值是否可为空
-    private boolean nullable;
-    //属性值是否唯一
-    private boolean unique;
-    //与当前属性关联的类
-    private RefClassPo refClassPo;
+    //属性是否为主键，默认非主键
+    private boolean pk = false;
+    //属性值是否可为空，默认可为空，采用字符串便于Freemarker输出布尔值
+    private String nullable = "true";
+    //属性值是否唯一，默认不唯一，采用字符串便于Freemarker输出布尔值
+    private String unique = "false";
+    //属性值是否为集合，默认非集合
+    private boolean plural = false;
+    //与当前属性关联的类，默认为null
+    private RefDomainPo refDomainPo = null;
+    
 	public String getName() {
 		return name;
 	}
@@ -47,48 +51,47 @@ public class PropertyPo {
 	public void setPk(boolean pk) {
 		this.pk = pk;
 	}
-	public boolean isNullable() {
+	public String getNullable() {
 		return nullable;
 	}
-	public void setNullable(boolean nullable) {
+	public void setNullable(String nullable) {
 		this.nullable = nullable;
 	}
-	public boolean isUnique() {
+	public String getUnique() {
 		return unique;
 	}
-	public void setUnique(boolean unique) {
+	public void setUnique(String unique) {
 		this.unique = unique;
 	}
-	public RefClassPo getRefClassPo() {
-		return refClassPo;
+	public boolean isPlural() {
+		return plural;
 	}
-	public void setRefClassPo(RefClassPo refClassPo) {
-		this.refClassPo = refClassPo;
+	public void setPlural(boolean plural) {
+		this.plural = plural;
 	}
+	public RefDomainPo getRefDomainPo() {
+		return refDomainPo;
+	}
+	public void setRefDomainPo(RefDomainPo refDomainPo) {
+		this.refDomainPo = refDomainPo;
+	}
+	
+	
+	
+	public PropertyPo(String name, String cnName, String type) {
+		super();
+		this.name = name;
+		this.cnName = cnName;
+		this.type = type;
+	}
+	
 	
 	@Override
 	public String toString() {
 		return "PropertyPo [name=" + name + ", cnName=" + cnName + ", type="
 				+ type + ", pk=" + pk + ", nullable=" + nullable + ", unique="
-				+ unique + ", refClassPo=" + refClassPo + "]";
-	}
-	
-	
-	public PropertyPo() {
-		super();
-	}
-	
-	public PropertyPo(String name, String cnName, String type, boolean pk,
-			boolean nullable, boolean unique, RefClassPo refClassPo) {
-		super();
-		this.name = name;
-		this.cnName = cnName;
-		this.type = type;
-		this.pk = pk;
-		this.nullable = nullable;
-		this.unique = unique;
-		this.refClassPo = refClassPo;
-	}
-    
+				+ unique + ", plural=" + plural + ", refDomainPo="
+				+ refDomainPo + "]";
+	}    
     
 }
