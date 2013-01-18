@@ -56,9 +56,10 @@ public interface UserService {
 	 * 根据条件查找${domain.cnName}
 	 * @param property 搜索属性
 	 * @param keyword 搜索关键字
+	 * @param user 当前用户
 	 * @return 返回所有${domain.cnName}
 	 */
-	List<${domain.name}> find${domain.name}sByProp(String property, String keyword);
+	List<${domain.name}> find${domain.name}sByProp(String property, String keyword, User user);
 	
 	/**
 	 * 根据关联类查找${domain.cnName}

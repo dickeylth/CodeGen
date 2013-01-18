@@ -141,38 +141,65 @@ public class GenDomain {
     	Configuration conf = new Configuration();
     	conf.setDirectoryForTemplateLoading(new File("src/templates"));
     	
-    	Map<String, Object> root;
+    	Map<String, Object> root = new HashMap<String, Object>();
+    	root.put("package", GenDomain.pkg);
     	for (DomainPo domainPo : this.domainPos) {
-    		root = new HashMap<String, Object>();
-        	root.put("package", GenDomain.pkg);
+    		
         	root.put("domain", domainPo);
-        	//使用Configuration实例来加载指定模板
+        	//处理domain模板
         	Template domainTemplate = conf.getTemplate("domain.ftl");
-        	//合并domain模板
         	//domainTemplate.process(root, new OutputStreamWriter(System.out));
         	//System.out.println();
         	
         	
-        	//加载dao模板
+        	//处理dao模板
         	Template daoTemplate = conf.getTemplate("dao.ftl");
-        	//合并dao模板
         	//daoTemplate.process(root, new OutputStreamWriter(System.out));
         	//System.out.println();
         	
-        	//加载daoImpl模板
+        	//处理daoImpl模板
         	Template daoImplTemplate = conf.getTemplate("daoImpl.ftl");
-        	//合并dao模板
         	//daoImplTemplate.process(root, new OutputStreamWriter(System.out));
         	//System.out.println();
+        	
+        	//处理action模板
+        	Template actionTemplate = conf.getTemplate("action.ftl");
+        	//actionTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
+        	
+        	//处理domain_edit模板
+        	Template domainEditTemplate = conf.getTemplate("domain_edit.ftl");
+        	//domainEditTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
+        	
+        	//处理domain_index模板
+        	Template domainViewTemplate = conf.getTemplate("domain_index.ftl");
+        	//domainViewTemplate.process(root, new OutputStreamWriter(System.out));
+        	//System.out.println();
+        	
+        	root.remove("domain");
 		}
     	
-    	//加载service模板
-    	root = new HashMap<String, Object>();
-    	root.put("package", GenDomain.pkg);
+    	//root.put("package", GenDomain.pkg);
     	root.put("domains", this.domainPos);
+    	//处理service模板
     	Template serviceTemplate = conf.getTemplate("service.ftl");
-    	//合并service模板
-    	serviceTemplate.process(root, new OutputStreamWriter(System.out));
+    	//serviceTemplate.process(root, new OutputStreamWriter(System.out));
+    	//System.out.println();
+    	
+    	//处理serviceImpl模板
+    	Template serviceImplTemplate = conf.getTemplate("serviceImpl.ftl");
+    	//serviceImplTemplate.process(root, new OutputStreamWriter(System.out));
+    	//System.out.println();
+    	
+    	//处理BaseAction模板
+    	Template baseActionTemplate = conf.getTemplate("baseAction.ftl");
+    	//baseActionTemplate.process(root, new OutputStreamWriter(System.out));
+    	//System.out.println();
+    	
+    	//处理BaseAction模板
+    	Template dbInitTemplate = conf.getTemplate("DatabaseInit.ftl");
+    	dbInitTemplate.process(root, new OutputStreamWriter(System.out));
     	System.out.println();
     }
     

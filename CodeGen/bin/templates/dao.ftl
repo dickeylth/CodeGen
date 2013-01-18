@@ -26,7 +26,7 @@ public interface ${domain.name}Dao {
 	void delete(String id);
 	
 	//查找所有${domain.name}
-	List<${domain.name}> findAll();
+	List<${domain.name}> getAll();
 	
 	<#if domain.userRelated = true>
 	//与用户类关联，根据用户查找${domain.name}
@@ -34,7 +34,7 @@ public interface ${domain.name}Dao {
 	</#if>
 	
 	//根据属性模糊查找${domain.name}
-	List<${domain.name}> findByProp(String property, String keyword);
+	List<${domain.name}> findByProp(String property, String keyword, User user);
 
 	//根据关联类查找${domain.name}
 	List<${domain.name}> findByRef(String refClass, String refId);

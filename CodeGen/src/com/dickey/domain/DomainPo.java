@@ -54,6 +54,36 @@ public class DomainPo {
 		this.userRelated = userRelated;
 	}
 	
+	//获取该domain下的基本类型字段&多对一&一对一映射字段（排除User），在edit页面
+	public String getDisplayFields(){
+		String ret = "";
+		for (PropertyPo property : this.properties) {
+			RefDomainPo refDomainPo = property.getRefDomainPo();
+			if(!property.isPlural() && (refDomainPo == null 
+					|| refDomainPo.getRefType().equals("one-to-one")
+					|| refDomainPo.getRefType().equals("many-to-one")
+					&& refDomainPo.getRefDomain() != "User")){
+				ret += "\"" + property.getName() + "\",";
+			}
+		}
+		return ret.substring(0, ret.length()-1);
+	}
+	
+	//获取该domain下的基本类型字段&多对一&一对一映射字段（排除id），在index页面
+	public List<PropertyPo> getDisplayProps(){
+		List<PropertyPo> propList = new LinkedList<>();
+		for (PropertyPo property : this.properties) {
+			RefDomainPo refDomainPo = property.getRefDomainPo();
+			if(!property.isPlural() && !property.getName().equals("id") 
+					&& (refDomainPo == null 
+					|| refDomainPo.getRefType().equals("one-to-one")
+					|| refDomainPo.getRefType().equals("many-to-one"))){
+				propList.add(property);
+			}
+		}
+		return propList;
+	}
+	
 	public DomainPo(String name, String cnName, List<PropertyPo> properties) {
 		super();
 		this.name = name;

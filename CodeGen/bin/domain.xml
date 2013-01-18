@@ -40,6 +40,7 @@
 				<ref>
 					<ref_domain>Address</ref_domain>
 					<ref_type>one-to-one</ref_type>
+					<ref_display_property>country</ref_display_property>
 				</ref>
 			</property>
 			<property>
@@ -157,6 +158,7 @@
 				<ref>
 					<ref_domain>User</ref_domain>
 					<ref_type>one-to-one</ref_type>
+					<ref_display_property>username</ref_display_property>
 				</ref>
 			</property>
 		</properties>

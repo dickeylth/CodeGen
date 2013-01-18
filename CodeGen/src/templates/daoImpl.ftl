@@ -53,7 +53,7 @@ public class ${domain.name}DaoImpl extends HibernateDaoSupport implements ${doma
 	//查找所有${domain.name}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<${domain.name}> findAll() {
+	public List<${domain.name}> getAll() {
 		// TODO Auto-generated method stub
 		return (List<${domain.name}>)getHibernateTemplate().find(" from ${domain.name}");
 	}
@@ -70,8 +70,13 @@ public class ${domain.name}DaoImpl extends HibernateDaoSupport implements ${doma
 	//根据属性模糊查找${domain.name}
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<${domain.name}> findByProp(String property, String keyword) {
-		return (List<${domain.name}>)getHibernateTemplate().find(" from ${domain.name} as a where a." + property + " like '%" + keyword + "%'");
+	public List<${domain.name}> findByProp(String property, String keyword, User user) {
+		String hql = " from ${domain.name} as a where a." + property + " like '%" + keyword + "%'";
+		<#if domain.userRelated = true>
+		return (List<${domain.name}>)getHibernateTemplate().find(hql + " and a.user = ?", user);
+		<#else>
+		return (List<${domain.name}>)getHibernateTemplate().find(hql);
+		</#if>
 	}
 
 	//根据关联类查找${domain.name}
